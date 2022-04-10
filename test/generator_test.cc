@@ -1,6 +1,7 @@
-#include <spdlog/spdlog.h>
-
 #include "generator.h"
+
+#include <gtest/gtest.h>
+#include <spdlog/spdlog.h>
 
 template <typename T>
 coro::Generator<T> Generate(T begin, T end) {
@@ -10,10 +11,9 @@ coro::Generator<T> Generate(T begin, T end) {
   co_return;
 }
 
-int main() {
+TEST(Generator, Run) {
   auto gen = Generate(0, 10);
   for (auto val : gen) {
     spdlog::info("val: {}", val);
   }
-  return 0;
 }

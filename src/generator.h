@@ -61,7 +61,9 @@ class Generator {
 
     const T &operator++() {
       h_->resume();
-      h_->promise().RethrowIfNeed();
+      if (h_->done()) {
+        h_->promise().RethrowIfNeed();
+      }
       return operator*();
     }
 
