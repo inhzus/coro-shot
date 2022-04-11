@@ -6,11 +6,9 @@
 #pragma once
 
 // Standard library support for coroutines.
-#if defined(ASIO_MSVC)
 #if (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705)
 #define CORO_HAS_STD_COROUTINE 1
 #endif  // (_MSC_VER >= 1928) && (_MSVC_LANG >= 201705)
-#endif  // defined(ASIO_MSVC)
 #if defined(__GNUC__)
 #if (__cplusplus >= 201709) && (__cpp_impl_coroutine >= 201902)
 #if __has_include(<coroutine>)
