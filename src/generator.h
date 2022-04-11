@@ -1,7 +1,8 @@
 #pragma once
-#include <coroutine>
 #include <exception>
 #include <optional>
+
+#include "config.h"
 
 namespace coro {
 
@@ -14,16 +15,16 @@ class Generator {
   struct Promise {
    public:
     Generator get_return_object() noexcept {
-      return Generator{std::coroutine_handle<Promise>::from_promise(*this)};
+      return Generator{detail::coroutine_handle<Promise>::from_promise(*this)};
     }
 
-    constexpr std::suspend_always initial_suspend() noexcept { return {}; }
-    constexpr std::suspend_always final_suspend() noexcept { return {}; }
-    std::suspend_always yield_value(const T &val) noexcept {
+    constexpr detail::suspend_always initial_suspend() noexcept { return {}; }
+    constexpr detail::suspend_always final_suspend() noexcept { return {}; }
+    detail::suspend_always yield_value(const T &val) noexcept {
       val_ = val;
       return {};
     }
-    std::suspend_always yield_value(T &&val) noexcept {
+    detail::suspend_always yield_value(T &&val) noexcept {
       val_ = std::move(val);
       return {};
     }
@@ -39,20 +40,21 @@ class Generator {
     }
 
     template <typename U>
-    std::suspend_never await_transform(U &&) = delete;
+    detail::suspend_never await_transform(U &&) = delete;
 
     std::optional<T> val_;
     std::exception_ptr ex_;
   };
 
-  explicit Generator(std::coroutine_handle<Promise> handle) : handle_{handle} {}
+  explicit Generator(detail::coroutine_handle<Promise> handle)
+      : handle_{handle} {}
   auto handle() noexcept { return handle_; }
 
   class IteratorSentinel {};
 
   class Iterator {
    public:
-    Iterator(std::coroutine_handle<Promise> *handle) : h_{handle} {}
+    explicit Iterator(detail::coroutine_handle<Promise> *handle) : h_{handle} {}
 
     const T &operator*() const { return h_->promise().Value(); }
     T &operator*() { return h_->promise().Value(); }
@@ -79,7 +81,7 @@ class Generator {
     }
 
    private:
-    std::coroutine_handle<Promise> *h_;
+    detail::coroutine_handle<Promise> *h_;
   };
 
   Iterator begin() {
@@ -87,12 +89,12 @@ class Generator {
     if (handle_.done()) {
       handle_.promise().RethrowIfNeed();
     }
-    return {&handle_};
+    return Iterator{&handle_};
   }
   IteratorSentinel end() { return {}; }
 
  private:
-  std::coroutine_handle<Promise> handle_;
+  detail::coroutine_handle<Promise> handle_;
 };
 
 }  // namespace coro
