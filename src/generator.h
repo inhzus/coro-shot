@@ -15,16 +15,16 @@ class Generator {
   struct Promise {
    public:
     Generator get_return_object() noexcept {
-      return Generator{detail::coroutine_handle<Promise>::from_promise(*this)};
+      return Generator{tr::coroutine_handle<Promise>::from_promise(*this)};
     }
 
-    constexpr detail::suspend_always initial_suspend() noexcept { return {}; }
-    constexpr detail::suspend_always final_suspend() noexcept { return {}; }
-    detail::suspend_always yield_value(const T &val) noexcept {
+    constexpr tr::suspend_always initial_suspend() noexcept { return {}; }
+    constexpr tr::suspend_always final_suspend() noexcept { return {}; }
+    tr::suspend_always yield_value(const T &val) noexcept {
       val_ = val;
       return {};
     }
-    detail::suspend_always yield_value(T &&val) noexcept {
+    tr::suspend_always yield_value(T &&val) noexcept {
       val_ = std::move(val);
       return {};
     }
@@ -40,13 +40,13 @@ class Generator {
     }
 
     template <typename U>
-    detail::suspend_never await_transform(U &&) = delete;
+    tr::suspend_never await_transform(U &&) = delete;
 
     std::optional<T> val_;
     std::exception_ptr ex_;
   };
 
-  explicit Generator(detail::coroutine_handle<Promise> handle)
+  explicit Generator(tr::coroutine_handle<Promise> handle)
       : handle_{handle} {}
   auto handle() noexcept { return handle_; }
 
@@ -54,7 +54,7 @@ class Generator {
 
   class Iterator {
    public:
-    explicit Iterator(detail::coroutine_handle<Promise> *handle) : h_{handle} {}
+    explicit Iterator(tr::coroutine_handle<Promise> *handle) : h_{handle} {}
 
     const T &operator*() const { return h_->promise().Value(); }
     T &operator*() { return h_->promise().Value(); }
@@ -81,7 +81,7 @@ class Generator {
     }
 
    private:
-    detail::coroutine_handle<Promise> *h_;
+    tr::coroutine_handle<Promise> *h_;
   };
 
   Iterator begin() {
@@ -94,7 +94,7 @@ class Generator {
   IteratorSentinel end() { return {}; }
 
  private:
-  detail::coroutine_handle<Promise> handle_;
+  tr::coroutine_handle<Promise> handle_;
 };
 
 }  // namespace coro

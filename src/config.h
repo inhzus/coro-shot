@@ -27,7 +27,7 @@
 #include <experimental/coroutine>
 #endif
 
-namespace coro::detail {
+namespace coro::tr {
 
 #if CORO_HAS_STD_COROUTINE
 using std::coroutine_handle;
