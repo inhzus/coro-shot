@@ -1,4 +1,4 @@
-add_executable(coro_test)
+add_executable(coro_test task_test.cpp)
 
 file(GLOB_RECURSE SOURCE_FILES *.cc)
 target_sources(coro_test PRIVATE ${SOURCE_FILES})

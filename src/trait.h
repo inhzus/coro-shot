@@ -1,4 +1,5 @@
 #include <type_traits>
+#include <memory>
 
 namespace coro {
 
